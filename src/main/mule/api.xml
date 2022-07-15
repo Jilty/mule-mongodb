@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <!--     <apikit:config name="apix-mongodb-sapi-2-config" api="resource::b0beec90-c6cc-4c36-8f7c-ef1f8f91253b:apix-mongodb-sapi:1.0.1:raml:zip:apix-mongodb-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" /> -->
+    <flow name="apix-mongodb-sapi-main">
+        <http:listener path="/api/${api.majorVersion}/*" config-ref="apiHttpListenerConfig">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="apixMongodbSapiConfig" />
+    </flow>
+    <flow name="post:\collection:application\json:apixMongodbSapiConfig" doc:id="0b7377a4-a764-4a84-b4db-88037e828af1">
+        <flow-ref doc:name="create-collection" doc:id="e859baa1-95af-43aa-a738-a09661af86f9" name="create-collection" />
+    </flow>
+    <flow name="post:\documents:application\json:apixMongodbSapiConfig" doc:id="07a691de-f92f-491f-81d5-761ec0f0adab">
+        <flow-ref doc:name="insert-data" doc:id="e23c84dc-8a94-42d1-be22-6b77f2d24511" name="insert-data" />
+    </flow>
+    <flow name="put:\document\(id):application\json:apixMongodbSapiConfig" doc:id="0968d02b-a790-4ae9-8661-2104640533b9">
+        <flow-ref doc:name="update-document-by-id" doc:id="939620c5-8172-4887-a7b5-630bf4f18933" name="update-document-by-id" />
+    </flow>
+    <flow name="delete:\document\(id):apixMongodbSapiConfig" doc:id="2b312e1f-51bf-458a-8b61-154f7c2bd46b">
+        <flow-ref doc:name="remove-document-by-id" doc:id="99e8b2ed-b9d6-4bef-a429-9efa59aae8a6" name="remove-document-by-id" />
+    </flow>
+    <flow name="get:\documents:apixMongodbSapiConfig" doc:id="687066a9-0c86-4881-acd3-2730680dce4d">
+        <flow-ref doc:name="get-all-documents" doc:id="2ec9d49d-fe55-482a-9567-3956e85427f2" name="get-all-documents" />
+    </flow>
+    <flow name="get:\document\(id):apixMongodbSapiConfig" doc:id="53fa4d9c-2c35-4919-96d8-3590e06cb299">
+        <flow-ref doc:name="get-document-by-id" doc:id="edf74671-47b0-49db-bc8e-1349d4fd7f6c" name="get-document-by-id" />
+    </flow>
+</mule>

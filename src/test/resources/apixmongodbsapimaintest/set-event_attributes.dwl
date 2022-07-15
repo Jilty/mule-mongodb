@@ -1,0 +1,31 @@
+{
+  "headers": {
+    "X-CLIENT-ID": "sdfsf",
+    "X-CLIENT-SECRET": "sdfds",
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.28.4",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "postman-token": "d3debbbb-b3be-4512-9f86-47e5dbf5b319",
+    "host": "localhost:8082",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "46"
+  },
+  "clientCertificate": null,
+  "method": "POST",
+  "scheme": "https",
+  "queryParams": {},
+  "requestUri": "/api/createCollection",
+  "queryString": "",
+  "version": "HTTP/1.1",
+  "maskedRequestPath": "/createCollection",
+  "listenerPath": "/api/*",
+  "relativePath": "/api/createCollection",
+  "localAddress": "/127.0.0.1:8082",
+  "uriParams": {},
+  "rawRequestUri": "/api/createCollection",
+  "rawRequestPath": "/api/createCollection",
+  "remoteAddress": "/127.0.0.1:50104",
+  "requestPath": "/api/createCollection"
+}

@@ -1,0 +1,3 @@
+{
+  "collectionName": "demo-collection1"
+}

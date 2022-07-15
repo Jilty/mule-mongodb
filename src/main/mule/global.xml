@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <apikit:config name="apixMongodbSapiConfig" api="resource::b0beec90-c6cc-4c36-8f7c-ef1f8f91253b:mule-mongodb:1.0.6:raml:zip:mule-mongodb.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <mongo:config name="mongodbConfig" doc:name="MongoDB Config" doc:id="e6488d41-a605-41fc-b946-3e13b34ebbd0">
+        <mongo:connection-string-connection connectionString="mongodb+srv://john:${secure::mongodb.password}@cluster7.znz5q.mongodb.net/myFirstDatabase?retryWrites=true&amp;w=majority" />
+    </mongo:config>
+    <configuration-properties doc:name="commonConfigurationProperties" doc:id="1668cdeb-3bf2-4d1e-888d-f9f0ecd5a653" file="properties\common-properties.yaml" />
+    <secure-properties:config name="securePropertiesConfig" doc:name="Secure Properties Config" doc:id="a255e1d5-ffeb-49a2-ac3d-6fa5dbcb8b5f" file="properties/secure-${mule.env}.yaml" key="${secure.key}">
+        <secure-properties:encrypt algorithm="Blowfish" />
+    </secure-properties:config>
+    <tls:context name="tlsContext" doc:name="TLS Context" doc:id="fdfcd229-269c-4810-bffc-7f155a156e2c">
+        <tls:trust-store insecure="true" />
+        <tls:key-store type="pkcs12" path="certs/apix-mongodb-sapi-${mule.env}.p12" alias="${secure::tls.alias}" keyPassword="${secure::tls.password}" password="${secure::tls.password}" />
+    </tls:context>
+    <!-- 	<import doc:name="Import" doc:id="ab20e968-bb7a-42ad-b8bd-5f6067876285" file="common-error-handler.xml" /> -->
+    <!-- 	<configuration doc:name="Configuration" doc:id="ef7e7fae-9982-4679-a7c8-c944431002c9" defaultErrorHandler-ref="global-error-handler"/> -->
+    <!-- 	<import doc:name="Import" doc:id="9234a041-d5a6-436f-8a93-6964dca7436a" file="common-health.xml" /> -->
+    <global-property doc:name="Global Property" doc:id="9201ed27-8cf4-4e93-b177-65aba2e46299" name="mule.env" value="dev" />
+    <import doc:name="importCommonHealth" doc:id="60ebf161-61a1-4fae-bb1f-8cfdf6a51c04" file="common-error-handler.xml" />
+    <import doc:name="importCommonErrorHandler" doc:id="d50de227-ba97-40b2-80a3-5f60044c8138" file="common-health.xml" />
+    <http:listener-config name="apiHttpListenerConfig" doc:name="HTTP Listener config" doc:id="139a207d-02cc-46a7-afd9-d1ef1bcb447d">
+        <http:listener-connection host="0.0.0.0" port="${api.port}" protocol="HTTPS" tlsContext="tlsContext" />
+    </http:listener-config>
+    <configuration doc:name="configuration" doc:id="70de7a0d-0e2b-48ad-95a4-f98ce4b431b0" defaultErrorHandler-ref="common-error-handler" />
+    <global-property doc:name="Global Property" doc:id="66e87d65-9a22-46b3-9b6d-9d1a05cb5443" name="secure.key" value="${secure.key}" />
+<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="apiAutodiscovery" doc:id="b60b01b4-c2ce-4a12-88a2-4f7f8f2d5c2f" flowRef="apix-mongodb-sapi-main" /> 
+    <configuration-properties doc:name="envConfigurationProperties" doc:id="3221d913-4fbc-4594-9b9f-1126c54e88a8" file="properties/secure-${mule.env}.yaml" />
+</mule>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="main-suite.xml" />
+	<munit:test name="get-all-documents-test" doc:id="9a8be627-6b0e-4060-9726-d834d2eafe6e" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Find documents" doc:id="804597d0-988f-4747-898d-b7eab6dd67a8" processor="mongo:find-documents">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="edaa96fd-19f1-452c-a6fa-7ade81c6366d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://getalldocumentstest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getalldocumentstest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="585f0f3f-a2b8-4920-9767-a0b9cbf9eec0" >
+				<munit:payload value="#[readUrl('classpath://getalldocumentstest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getalldocumentstest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getalldocumentstest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name=" get-all-documents" doc:id="d2a260a9-3eeb-47b2-b67e-458cea204d20" name="get-all-documents"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="af95dbe5-6647-4973-931e-ca564910568b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getalldocumentstest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="create-collection-test" doc:id="c0ceb342-cc62-4caf-932e-d94fc0148a52" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Create collection" doc:id="e4fce5e4-a5ac-4f3e-b6eb-478e9f642bf0" processor="mongo:create-collection">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0e073cee-b695-48a1-8ac1-bc2672aa48f9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://createcollectiontest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://createcollectiontest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://createcollectiontest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="1e3f78c7-6ac4-4206-af42-2c74fa6c6b2c" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://createcollectiontest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://createcollectiontest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://createcollectiontest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="create-collection" doc:id="1132248f-9b5b-4b9b-86f6-c024afddb82a" name="create-collection"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="c859f6ef-bcf1-444c-b044-7b3a8673fe7f" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import createcollectiontest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="update-document-by-id-test" doc:id="213a0ff8-6613-4677-a616-5e67fa037f5b" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Update documents" doc:id="0aeeb2e3-b6bf-43f2-afb1-724c597cc6b4" processor="mongo:update-documents">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7b7fd1c8-b3df-4bd6-9231-65a259b97e64" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://updatedocumentbyidtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://updatedocumentbyidtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="temp" value="#[output application/json --- readUrl('classpath://updatedocumentbyidtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="286a81bb-3e3b-4250-bc61-97ef3cf4b06f" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://updatedocumentbyidtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://updatedocumentbyidtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://updatedocumentbyidtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="update-document-by-id" doc:id="83836cef-b327-45d4-af83-4798f2e69109" name="update-document-by-id"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="d35226a4-15b9-401f-8368-b5407b386b96" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import updatedocumentbyidtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-document-by-id-test" doc:id="523e3201-c87a-4efa-976a-27352e0d2539" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Find documents" doc:id="82542416-3ca4-4642-b97c-701918cdd4f0" processor="mongo:find-documents">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="74f4c5eb-f135-4a96-a5cb-7bf225ee02f0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://getdocumentbyidtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getdocumentbyidtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="9f3a6272-8b4a-4203-9dac-2d914a325265" >
+				<munit:payload value="#[readUrl('classpath://getdocumentbyidtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getdocumentbyidtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getdocumentbyidtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name=" get-document-by-id" doc:id="39af3b60-3755-41ce-83e5-3d91544dfbe9" name="get-document-by-id"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="8f67ee90-0b6c-4bee-8767-0d46cc79d00b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getdocumentbyidtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="remove-document-by-id-test" doc:id="6c882393-cdce-4dc2-8305-3248d51fc411" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Remove documents" doc:id="b3e6f8ce-1f3e-49a7-a186-35b5e1c0aa52" processor="mongo:remove-documents">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b1be360f-ddc0-4d9a-afc5-f7e5be33f930" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://removedocumentbyidtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://removedocumentbyidtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="5bb83a8f-7c3e-4013-8754-8b58c40bd333" >
+				<munit:payload value="#[readUrl('classpath://removedocumentbyidtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://removedocumentbyidtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://removedocumentbyidtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="remove-document-by-id" doc:id="041f5e77-0cfb-4753-96ef-06f92978eecf" name="remove-document-by-id"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="03f9e649-e9e5-4349-918c-3752e2917625" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import removedocumentbyidtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="main-test-suite-insert-dataTest" doc:id="e62a7f2a-cbb0-4b2e-b464-a35cceb409e1" description="Test">
+			<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="bc54302c-8976-4cb1-966c-3fdb603ad46e" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://insertDocuments\mock_payload.dwl')]" mediaType="application/json" />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d00f01bf-a75f-4858-ad98-c8ce681ea165" processor="mongo:insert-document">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert document" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="5c00dad1-64b5-4203-a311-6a685dac3d46" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="mongodbConfig" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::mongodb.collectionName}" attributeName="collectionName" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+				<flow-ref doc:name="insert-data" doc:id="37678728-ff2f-4f85-8616-158bc95cacf3" name="insert-data" />
+			</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="794f73e6-96db-4cbd-bf7a-7a1e8b58d9ba" actual="#[payload]" expected="#[readUrl('classpath://insertDocuments\mock_payload.dwl')]"/>
+		</munit:validation>
+		</munit:test>
+	<munit:test name="main-test-suite-get-all-documentsTest" doc:id="406df510-82a0-4b90-a34a-7546ce69e9cf" description="Test">
+			<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8f4ffb12-dd6a-4deb-9fdd-18ad1e8de850" processor="mongo:find-documents">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="${secure::mongodb.collectionName}" attributeName="collectionName" />
+					<munit-tools:with-attribute whereValue="Find documents" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="edaa96fd-19f1-452c-a6fa-7ade81c6366d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="mongodbConfig" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="," attributeName="fields" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MONGO:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="5f4b260e-1dce-4860-ba04-88aa1e851b6e" >
+				<flow-ref doc:name="get-all-documents" doc:id="dac16e58-d68a-4c26-8860-dbacf4f2d57e" name="get-all-documents" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="db03341c-ca52-4027-bca5-4c743ce0ed46" >
+						<logger level="INFO" doc:name="Logger" doc:id="50fdb0a8-0aa4-42e7-be0e-df67230d06b9" message='#[""]'/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+			</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="da834163-060a-45f2-a7f5-4898fd032867" actual="#[payload.message]" expected='#["MONGO:CONNECTIVITY"]' />
+		</munit:validation>
+		</munit:test>
+
+
+</mule>

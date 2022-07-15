@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-all-documents" doc:id="1a5bda20-a6be-41e5-a2b3-c95a5aa710fa" >
+		<mongo:find-documents collectionName="${secure::mongodb.collectionName}" doc:name="Find documents" doc:id="edaa96fd-19f1-452c-a6fa-7ade81c6366d" config-ref="mongodbConfig" fields="," />
+		<ee:transform doc:name="to JSON" doc:id="eb4257d2-fd73-4938-9b09-a54bea8d8c09" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="api_error_handler" />
+	
+</flow>
+	<flow name="create-collection" doc:id="a63f8441-8f8a-45d1-b242-08f19a92e01f" >
+		<mongo:create-collection doc:name="Create collection" doc:id="0e073cee-b695-48a1-8ac1-bc2672aa48f9" config-ref="mongodbConfig" collectionName="#[payload.collectionName]"/>
+		<ee:transform doc:name="to JSON" doc:id="dabe4769-a1bc-4462-8d8a-af50cab8d652" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="api_error_handler" />
+	
+</flow>
+	<flow name="update-document-by-id" doc:id="89067180-a4ab-4469-989d-9a98786add7a" >
+		<set-payload value="#[%dw 2.0
+&#10;output application/json
+&#10;---
+&#10;payload]" doc:name="Input Data to be Changed" doc:id="6ba1fd24-024d-470b-9779-4c70c3d0e4df" />
+		<set-variable value='#[%dw 2.0
+&#10;output application/json
+&#10;---
+&#10;{
+&#10;	"id" : attributes.uriParams.id as Number
+&#10;}]' doc:name="Storing Id" doc:id="1953479c-88c8-4f67-bbef-646291221008" variableName="temp"/>
+		<mongo:update-documents doc:name="Update documents" doc:id="7b7fd1c8-b3df-4bd6-9231-65a259b97e64" config-ref="mongodbConfig" collectionName="${secure::mongodb.collectionName}">
+			<mongo:query ><![CDATA[#[vars.temp]]]></mongo:query>
+		</mongo:update-documents>
+		<ee:transform doc:name="to JSON" doc:id="78a79e7f-3e5f-4d90-a603-d84d3dcf46df" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="api_error_handler" />
+	
+</flow>
+	<flow name="get-document-by-id" doc:id="9aa2c748-911f-46ce-b3db-aa72e0f97e07" >
+		<set-payload value='#[%dw 2.0
+&#10;output application/json
+&#10;---
+&#10;{
+&#10;	"id" : attributes.uriParams.id as Number
+&#10;}]' doc:name="Storing Id" doc:id="970321b7-5a8c-4d2e-87bb-c67e70fe5de1" />
+		<mongo:find-documents doc:name="Find documents" doc:id="74f4c5eb-f135-4a96-a5cb-7bf225ee02f0" config-ref="mongodbConfig" collectionName="${secure::mongodb.collectionName}" fields=",">
+			<mongo:query ><![CDATA[#[payload]]]></mongo:query>
+		</mongo:find-documents>
+		<ee:transform doc:name="to JSON" doc:id="6c536d94-347c-41dd-a651-f000f76dbfbc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="api_error_handler" />
+	
+</flow>
+	<flow name="remove-document-by-id" doc:id="86098532-f513-4ff2-aca8-fdaaccbe2643" >
+		<set-payload value='#[%dw 2.0
+&#10;output application/json
+&#10;---
+&#10;{
+&#10;	"id" : attributes.uriParams.id as Number
+&#10;}]' doc:name="String Id" doc:id="43aafeb1-2613-4710-8677-7b818e01d244" />
+		<mongo:remove-documents doc:name="Remove documents" doc:id="b1be360f-ddc0-4d9a-afc5-f7e5be33f930" config-ref="mongodbConfig" collectionName="${secure::mongodb.collectionName}">
+			<mongo:query ><![CDATA[#[payload]]]></mongo:query>
+		</mongo:remove-documents>
+		<ee:transform doc:name="to JSON" doc:id="fe891186-c0b6-4612-a2df-9472d8085079" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="api_error_handler" />
+	
+</flow>
+	<flow name="insert-data" doc:id="70ab60f2-9be7-434a-83d8-12adc942c048" >
+		<ee:transform doc:name="to JSON" doc:id="0eb28379-02db-45bf-9f2a-406f4eb4f5d9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="114594aa-ab7f-4691-90ac-ce1754d0c530" >
+			<mongo:insert-document doc:name="Insert document" doc:id="5c00dad1-64b5-4203-a311-6a685dac3d46" config-ref="mongodbConfig" collectionName="${secure::mongodb.collectionName}"/>
+		</foreach>
+		<ee:transform doc:name="to JSON" doc:id="173df928-c4e4-4421-a4e5-b5608cb97595" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="api_error_handler" />
+	
+</flow>
+</mule>

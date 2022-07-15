@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="readiness-check-subflow" doc:id="d0805424-892f-418e-9dae-e1b8e72c8c45" >
+		<try doc:name="Try" doc:id="3b6e826f-1fea-4a60-85f1-9df3586866b9" >
+			<mongo:find-documents doc:name="Find documents" doc:id="70a4b8b4-c68b-441b-8f11-e67594827813" config-ref="mongodbConfig" collectionName="${secure::mongodb.collectionName}" fields=","/>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7644cf9b-2a8e-48b7-8734-df0de6b68f24" type="MONGO:CONNECTIVITY">
+					<logger level="INFO" doc:name="Logger" doc:id="fea4e753-6439-423e-ac8f-529a6dd55668" message='#[""]'/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Readiness Response" doc:id="61e35340-5502-46df-8870-b727daebfeb9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	servicename: "MongoDB",
+	status: if(payload == null)
+	"down"
+	else
+	"up" 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

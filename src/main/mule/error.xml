@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="api_error_handler" doc:id="89d15e78-66ba-4d9e-856c-eacb08247ee7" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="545b8b20-1361-4447-80f0-51bc5988efe7" type="MONGO:CONNECTIVITY">
+			<set-variable value="500" doc:name="httpStatus" doc:id="22ddccda-a98b-4fb8-b16c-c98ac6e70a36" variableName="httpStatus"/>
+			<flow-ref doc:name="error-flow" doc:id="3a0167d3-13c3-4563-b543-02f70225f207" name="error-flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6e9f5d9d-bcb3-4424-95fd-2c90ca475b38" type="MONGO:INVALID_INPUT">
+			<set-variable value="400" doc:name="httpStatus" doc:id="09c8b4d4-a3f1-45c3-b8e2-07158f398055" variableName="httpStatus"/>
+			<flow-ref doc:name="error-flow" doc:id="a4ece19e-c4f8-4e60-9b27-e02cc81f5f8a" name="error-flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f80d9699-ffb1-4a64-b02b-6c24ac2810ad" type="MONGO:PERMISSIONS_DENIED,MONGO:TIMEOUT">
+			<set-variable value="403" doc:name="httpStatus" doc:id="185815d7-8866-4b41-befb-2a210bd11dd0" variableName="httpStatus"/>
+			<flow-ref doc:name="error-flow" doc:id="2b7dd568-6eb1-4622-9820-0dda2e6f369e" name="error-flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dc9b0095-8f91-4123-a8af-4fbdef5a4cce" type="MONGO:NOT_FOUND">
+			<set-variable value="404" doc:name="httpStatus" doc:id="454cdc26-b61a-482b-9979-ab2ef5423e96" variableName="httpStatus"/>
+			<flow-ref doc:name="error-flow" doc:id="37cd0142-56f3-4677-a09e-dbdf5483f783" name="error-flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f5242573-6b3f-41d6-89d8-8898361ca215" type="ANY">
+			<set-variable value="500" doc:name="httpStatus" doc:id="5d38ea97-c423-4945-bbfe-7b4544dec960" variableName="httpStatus"/>
+			<flow-ref doc:name="error-flow" doc:id="079d4930-95a8-4aa9-ba9b-014dad6cd66e" name="error-flow"/>
+		</on-error-propagate>
+	</error-handler>
+	<flow name="error-flow" doc:id="a4d92c40-c657-445e-a548-548591c89e9e" >
+		<ee:transform doc:name="Error Object to JSON" doc:id="2edcde2f-8fce-4965-b0b8-45fdf189605a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	message: error.errorType.namespace as String ++ ":" ++ error.errorType.identifier as String,
+	description: error.description
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

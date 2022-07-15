@@ -1,0 +1,13 @@
+
+mongodb:
+  password: "![kyApIqL9mnrP33mN07wamA==]"
+  collectionName : "demo-collection"
+  
+tls:
+  alias : "![MqX+irJKrUg=]"
+  password : "![TjrgNiKb/sw=]"  
+  
+api:
+  id: "17987210"  
+  
+  
